@@ -10,4 +10,5 @@ public interface BookingService {
     Booking getBookingById(Integer id);
     List<Booking> getBookingsByEmail(String email);
     Booking cancelBooking(Integer id);
+    Booking getBookingByPnr(String pnr); // new
 }

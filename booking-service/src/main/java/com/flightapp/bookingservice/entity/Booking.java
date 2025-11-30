@@ -31,4 +31,8 @@ public class Booking {
     private Integer numberOfTickets;
 
     private String status; // BOOKED / CANCELLED
+
+    @Column(unique = true, nullable = false)
+    private String pnr;
+
 }

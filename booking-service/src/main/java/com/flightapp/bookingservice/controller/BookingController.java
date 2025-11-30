@@ -22,11 +22,11 @@ public class BookingController {
 
     @PostMapping
     public ResponseEntity<BookingResponse> bookTicket(@Valid @RequestBody BookingRequest request) {
-        Booking booking = service.bookTicket(request);
-        String pnr = UUID.randomUUID().toString().substring(0, 8).toUpperCase();
+        Booking booking = service.bookTicket(request); // PNR is already set
         return ResponseEntity.status(HttpStatus.CREATED)
-                .body(new BookingResponse(booking.getId(), pnr));
+                .body(new BookingResponse(booking.getId(), booking.getPnr()));
     }
+
 
     @GetMapping("/email/{email}")
     public ResponseEntity<List<Booking>> getByEmail(@PathVariable String email) {
@@ -37,6 +37,12 @@ public class BookingController {
     public ResponseEntity<Booking> getById(@PathVariable Integer id) {
         return ResponseEntity.ok(service.getBookingById(id));
     }
+
+    @GetMapping("/pnr/{pnr}")
+    public ResponseEntity<Booking> getBookingByPnr(@PathVariable String pnr) {
+        return ResponseEntity.ok(service.getBookingByPnr(pnr));
+    }
+
 
     @DeleteMapping("/{id}")
     public ResponseEntity<String> cancelBooking(@PathVariable Integer id) {

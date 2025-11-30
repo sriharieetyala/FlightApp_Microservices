@@ -9,4 +9,5 @@ import java.util.Optional;
 public interface BookingRepository extends JpaRepository<Booking, Integer> {
     Optional<Booking> findById(Integer id);
     List<Booking> findByEmail(String email);
+    Optional<Booking> findByPnr(String pnr); // new
 }

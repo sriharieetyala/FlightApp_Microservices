@@ -38,6 +38,7 @@ public class FlightController {
 
     @PostMapping("/search")
     public ResponseEntity<FlightResponse> search(@Valid @RequestBody SearchFlightRequest req) {
-        return ResponseEntity.ok(service.searchFlight(req));
+     FlightResponse response = service.searchFlight(req);
+        return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 }

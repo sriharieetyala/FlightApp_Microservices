@@ -28,16 +28,15 @@ public class BookingServiceImpl implements BookingService {
 
     @Override
     public Booking bookTicket(BookingRequest request) {
-
-        // Get flight from Flight Service
         FlightResponse flight = flightClient.getFlightById(request.getFlightId());
         if (flight == null) {
             throw new BookingInvalidException("Flight not found");
         }
-
         if (request.getNumberOfTickets() > flight.getSeatsAvailable()) {
             throw new BookingInvalidException("Not enough seats available");
         }
+
+        String pnr = UUID.randomUUID().toString().substring(0, 8).toUpperCase(); // generate PNR
 
         Booking booking = Booking.builder()
                 .flightId(request.getFlightId())
@@ -48,11 +47,20 @@ public class BookingServiceImpl implements BookingService {
                 .email(request.getEmail())
                 .numberOfTickets(request.getNumberOfTickets())
                 .status("BOOKED")
+                .pnr(pnr) // save PNR in DB
                 .build();
 
         repo.save(booking);
         return booking;
     }
+
+
+    @Override
+    public Booking getBookingByPnr(String pnr) {
+        return repo.findByPnr(pnr)
+                .orElseThrow(() -> new BookingNotFoundException("Booking with PNR not found"));
+    }
+
 
     @Override
     public Booking getBookingById(Integer id) {
