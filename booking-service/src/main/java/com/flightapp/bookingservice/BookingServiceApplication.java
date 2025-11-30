@@ -11,6 +11,7 @@ import org.springframework.cloud.openfeign.EnableFeignClients;
 @EnableFeignClients
 @EnableDiscoveryClient
 
+
 public class BookingServiceApplication {
     public static void main(String[] args) {
         SpringApplication.run(BookingServiceApplication.class, args);
