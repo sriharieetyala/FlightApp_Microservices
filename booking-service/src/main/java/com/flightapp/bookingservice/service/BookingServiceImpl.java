@@ -7,6 +7,8 @@ import com.flightapp.bookingservice.exception.BookingInvalidException;
 import com.flightapp.bookingservice.exception.BookingNotFoundException;
 import com.flightapp.bookingservice.feign.FlightServiceClient;
 import com.flightapp.bookingservice.repository.BookingRepository;
+
+import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -22,21 +24,20 @@ public class BookingServiceImpl implements BookingService {
     private final BookingRepository repo;
     private final FlightServiceClient flightClient;
 
-    private String generatePNR() {
-        return UUID.randomUUID().toString().substring(0, 8).toUpperCase();
-    }
+    private static final String FLIGHT_CB = "flightServiceCB";
 
     @Override
+    @CircuitBreaker(name = FLIGHT_CB, fallbackMethod = "flightServiceFallback")
     public Booking bookTicket(BookingRequest request) {
+
         FlightResponse flight = flightClient.getFlightById(request.getFlightId());
-        if (flight == null) {
-            throw new BookingInvalidException("Flight not found");
-        }
+
         if (request.getNumberOfTickets() > flight.getSeatsAvailable()) {
             throw new BookingInvalidException("Not enough seats available");
         }
 
-        String pnr = UUID.randomUUID().toString().substring(0, 8).toUpperCase(); // generate PNR
+        // generate PNR
+        String pnr = UUID.randomUUID().toString().substring(0, 8).toUpperCase();
 
         Booking booking = Booking.builder()
                 .flightId(request.getFlightId())
@@ -47,36 +48,24 @@ public class BookingServiceImpl implements BookingService {
                 .email(request.getEmail())
                 .numberOfTickets(request.getNumberOfTickets())
                 .status("BOOKED")
-                .pnr(pnr) // save PNR in DB
+                .pnr(pnr)
                 .build();
 
-        repo.save(booking);
-        return booking;
+        return repo.save(booking);
     }
 
-
-    @Override
-    public Booking getBookingByPnr(String pnr) {
-        return repo.findByPnr(pnr)
-                .orElseThrow(() -> new BookingNotFoundException("Booking with PNR not found"));
-    }
-
-
-    @Override
-    public Booking getBookingById(Integer id) {
-        return repo.findById(id).orElseThrow(() -> new BookingNotFoundException("Booking not found"));
+    // ---------- FALLBACK METHOD ----------
+    public Booking flightServiceFallback(BookingRequest request, Throwable ex) {
+        throw new BookingInvalidException("Flight service unavailable, booking cannot be processed right now.");
     }
 
     @Override
-    public List<Booking> getBookingsByEmail(String email) {
-        return repo.findByEmail(email);
-    }
-
-    @Override
+    @CircuitBreaker(name = FLIGHT_CB, fallbackMethod = "getBookingFallback")
     public Booking cancelBooking(Integer id) {
-        Booking booking = repo.findById(id).orElseThrow(() -> new BookingNotFoundException("Booking not found"));
 
-        // get flight departure
+        Booking booking = repo.findById(id)
+                .orElseThrow(() -> new BookingNotFoundException("Booking not found"));
+
         FlightResponse flight = flightClient.getFlightById(booking.getFlightId());
 
         if (Duration.between(LocalDateTime.now(), flight.getDepartureTime()).toHours() < 24) {
@@ -84,7 +73,27 @@ public class BookingServiceImpl implements BookingService {
         }
 
         booking.setStatus("CANCELLED");
-        repo.save(booking);
-        return booking;
+        return repo.save(booking);
+    }
+
+    public Booking getBookingFallback(Integer id, Throwable ex) {
+        throw new BookingInvalidException("Flight service unavailable, cancellation cannot be processed now.");
+    }
+
+    @Override
+    public Booking getBookingById(Integer id) {
+        return repo.findById(id)
+                .orElseThrow(() -> new BookingNotFoundException("Booking not found"));
+    }
+
+    @Override
+    public Booking getBookingByPnr(String pnr) {
+        return repo.findByPnr(pnr)
+                .orElseThrow(() -> new BookingNotFoundException("PNR not found"));
+    }
+
+    @Override
+    public List<Booking> getBookingsByEmail(String email) {
+        return repo.findByEmail(email);
     }
 }
