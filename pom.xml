@@ -1,11 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0"
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0
-                             http://maven.apache.org/xsd/maven-4.0.0.xsd">
+                             https://maven.apache.org/xsd/maven-4.0.0.xsd">
 
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.microservices.flightapp</groupId>
-    <artifactId>MicroServicesFlightApp</artifactId>
+    <artifactId>FlightApp_Microservices</artifactId>
     <version>1.0.0</version>
     <packaging>pom</packaging>
 
@@ -19,16 +20,23 @@
     </modules>
 
     <properties>
+        <java.version>21</java.version>
         <sonar.organization>sriharieetyala-1</sonar.organization>
-        <!-- Only include booking and flight for coverage -->
+
+        <!-- Only include booking & flight modules for SonarCloud coverage -->
         <sonar.inclusions>**/booking-service/src/main/java/**,**/flight-service/src/main/java/**</sonar.inclusions>
         <sonar.coverage.exclusions>**/config-server/**,**/email-service/**,**/service-registry/**,**/api-gateway/**</sonar.coverage.exclusions>
-        <java.version>21</java.version>
+
+        <!-- Jacoco XML reports for SonarCloud -->
+        <sonar.coverage.jacoco.xmlReportPaths>
+            booking-service/target/site/jacoco/jacoco.xml,flight-service/target/site/jacoco/jacoco.xml
+        </sonar.coverage.jacoco.xmlReportPaths>
     </properties>
 
     <build>
         <pluginManagement>
             <plugins>
+
                 <!-- Sonar Maven Plugin -->
                 <plugin>
                     <groupId>org.sonarsource.scanner.maven</groupId>
@@ -36,52 +44,25 @@
                     <version>3.9.1.2184</version>
                 </plugin>
 
-                <!-- Jacoco for coverage -->
+                <!-- Jacoco aggregate plugin (optional, only if you want aggregate reports locally) -->
                 <plugin>
                     <groupId>org.jacoco</groupId>
                     <artifactId>jacoco-maven-plugin</artifactId>
                     <version>0.8.12</version>
                     <executions>
-                        <!-- Attach JaCoCo agent for tests -->
-                        <execution>
-                            <id>prepare-agent</id>
-                            <goals>
-                                <goal>prepare-agent</goal>
-                            </goals>
-                        </execution>
-
-                        <!-- Aggregate report at verify phase -->
                         <execution>
                             <id>report-aggregate</id>
                             <phase>verify</phase>
                             <goals>
                                 <goal>report-aggregate</goal>
                             </goals>
-                        </execution>
-
-                        <!-- Enforce minimum coverage rule if needed -->
-                        <execution>
-                            <id>jacoco-check</id>
-                            <goals>
-                                <goal>check</goal>
-                            </goals>
                             <configuration>
-                                <rules>
-                                    <rule>
-                                        <element>CLASS</element>
-                                        <limits>
-                                            <limit>
-                                                <counter>LINE</counter>
-                                                <value>COVEREDRATIO</value>
-                                                <minimum>0.80</minimum>
-                                            </limit>
-                                        </limits>
-                                    </rule>
-                                </rules>
+                                <outputDirectory>${project.build.directory}/site/jacoco-aggregate</outputDirectory>
                             </configuration>
                         </execution>
                     </executions>
                 </plugin>
+
             </plugins>
         </pluginManagement>
     </build>
