@@ -6,6 +6,7 @@ import com.flightapp.bookingservice.entity.Booking;
 import com.flightapp.bookingservice.exception.BookingInvalidException;
 import com.flightapp.bookingservice.exception.BookingNotFoundException;
 import com.flightapp.bookingservice.feign.FlightServiceClient;
+import com.flightapp.bookingservice.producer.RabbitMQProducer;
 import com.flightapp.bookingservice.repository.BookingRepository;
 
 import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
@@ -23,6 +24,7 @@ public class BookingServiceImpl implements BookingService {
 
     private final BookingRepository repo;
     private final FlightServiceClient flightClient;
+    private final RabbitMQProducer producer;     // ⬅️ ADDED
 
     private static final String FLIGHT_CB = "flightServiceCB";
 
@@ -51,7 +53,19 @@ public class BookingServiceImpl implements BookingService {
                 .pnr(pnr)
                 .build();
 
-        return repo.save(booking);
+        Booking saved = repo.save(booking);
+
+        // -------------- SEND EMAIL MESSAGE TO RABBITMQ ----------------
+        String emailMessage =
+                "🎉 Booking Confirmed!\n" +
+                        "PNR: " + pnr + "\n" +
+                        "Passenger: " + request.getPassengerName() + "\n" +
+                        "Email: " + request.getEmail() + "\n" +
+                        "Tickets: " + request.getNumberOfTickets();
+
+        producer.sendBookingEmail(emailMessage);
+
+        return saved;
     }
 
     // ---------- FALLBACK METHOD ----------
