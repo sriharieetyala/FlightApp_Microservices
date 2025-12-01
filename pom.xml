@@ -11,12 +11,13 @@
     <packaging>pom</packaging>
 
     <modules>
-        <module>booking-service</module>
         <module>flight-service</module>
-        <module>config-server</module>
-        <module>email-service</module>
+
         <module>service-registry</module>
         <module>api-gateway</module>
+        <module>Config-Server</module>
+        <module>email-service</module>
+        <module>booking-service</module>
     </modules>
 
     <properties>
@@ -25,7 +26,7 @@
 
         <!-- Only include booking & flight modules for SonarCloud coverage -->
         <sonar.inclusions>**/booking-service/src/main/java/**,**/flight-service/src/main/java/**</sonar.inclusions>
-        <sonar.coverage.exclusions>**/config-server/**,**/email-service/**,**/service-registry/**,**/api-gateway/**</sonar.coverage.exclusions>
+        <sonar.coverage.exclusions>**/ConfigServer/**,**/email-service/**,**/service-registry/**,**/api-gateway/**,**/passenger-service/**,**/ticket-service/**</sonar.coverage.exclusions>
 
         <!-- Jacoco XML reports for SonarCloud -->
         <sonar.coverage.jacoco.xmlReportPaths>
@@ -44,7 +45,7 @@
                     <version>3.9.1.2184</version>
                 </plugin>
 
-                <!-- Jacoco aggregate plugin (optional, only if you want aggregate reports locally) -->
+                <!-- Jacoco aggregate plugin -->
                 <plugin>
                     <groupId>org.jacoco</groupId>
                     <artifactId>jacoco-maven-plugin</artifactId>

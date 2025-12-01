@@ -1,0 +1,171 @@
+{
+	"info": {
+		"_postman_id": "7b987a35-7b2a-461e-8dea-e1dbf2fb1b61",
+		"name": "Api-gateway flight",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "50076599",
+		"_collection_link": "https://sriharie-1401903.postman.co/workspace/Sriharie's-Workspace~49b0439d-9ccd-4411-8772-e4f64af654e1/collection/50076599-7b987a35-7b2a-461e-8dea-e1dbf2fb1b61?action=share&source=collection_link&creator=50076599"
+	},
+	"item": [
+		{
+			"name": "adding flight",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"flightNumber\": \"AI202\",\r\n  \"fromCity\": \"DELHI\",\r\n  \"toCity\": \"MUMBAI\",\r\n  \"departureTime\": \"2025-12-01T10:00:00\",\r\n  \"arrivalTime\": \"2025-12-01T12:00:00\",\r\n  \"cost\": 5500,\r\n  \"seatsAvailable\": 120\r\n}\r\n",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8080/flight-service/flights",
+					"protocol": "http",
+					"host": ["localhost"],
+					"port": "8080",
+					"path": ["flight-service", "flights"]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "gettinglall",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8080/flight-service/flights",
+					"protocol": "http",
+					"host": ["localhost"],
+					"port": "8080",
+					"path": ["flight-service", "flights"]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "getbyid",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8080/flight-service/flights/3",
+					"protocol": "http",
+					"host": ["localhost"],
+					"port": "8080",
+					"path": ["flight-service", "flights", "3"]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "search",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"fromCity\": \"DELHI\",\r\n  \"toCity\": \"GOA\"\r\n}\r\n",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8080/flight-service/flights/search",
+					"protocol": "http",
+					"host": ["localhost"],
+					"port": "8080",
+					"path": ["flight-service", "flights", "search"]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "booking",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"flightId\": 1,\r\n  \"passengerName\": \"Ravi\",\r\n  \"age\": 25,\r\n  \"gender\": \"MALE\",\r\n  \"meal\": \"VEG\",\r\n  \"email\": \"sri@gmail.com\",\r\n  \"numberOfTickets\": 2\r\n}\r\n",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8080/booking-service/bookings",
+					"protocol": "http",
+					"host": ["localhost"],
+					"port": "8080",
+					"path": ["booking-service", "bookings"]
+				}
+			},
+			"response": []
+		},
+{
+    "name": "bymail",
+    "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+            "raw": "http://localhost:8080/booking-service/bookings/email/sri@gmail.com",
+            "host": ["localhost"],
+            "port": "8080",
+            "path": ["booking-service", "bookings", "email", "sri@gmail.com"]
+        }
+    },
+    "response": []
+},
+{
+    "name": "byid",
+    "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+            "raw": "http://localhost:8080/booking-service/bookings/1",
+            "host": ["localhost"],
+            "port": "8080",
+            "path": ["booking-service", "bookings", "1"]
+        }
+    },
+    "response": []
+},
+{
+    "name": "getbypnr",
+    "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+            "raw": "http://localhost:8080/booking-service/bookings/pnr/PNR123",
+            "host": ["localhost"],
+            "port": "8080",
+            "path": ["booking-service", "bookings", "pnr", "PNR123"]
+        }
+    },
+    "response": []
+}
+,
+		{
+			"name": "delete",
+			"request": {
+				"method": "DELETE",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8080/booking-service/bookings/1",
+					"protocol": "http",
+					"host": ["localhost"],
+					"port": "8080",
+					"path": ["booking-service", "bookings", "1"]
+				}
+			},
+			"response": []
+		}
+	]
+}
