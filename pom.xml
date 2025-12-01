@@ -10,54 +10,47 @@
     <packaging>pom</packaging>
 
     <modules>
-  
-            <module>booking-service</module>
-            <module>flight-service</module>
-            <module>config-server</module>
-            <module>email-service</module>
-            <module>service-registry</module>
-            <module>api-gateway</module>
-
-
-
+        <module>booking-service</module>
+        <module>flight-service</module>
+        <module>config-server</module>
+        <module>email-service</module>
+        <module>service-registry</module>
+        <module>api-gateway</module>
     </modules>
 
     <properties>
         <sonar.organization>sriharieetyala-1</sonar.organization>
         <!-- Only include booking and flight for coverage -->
-        <sonar.inclusions>booking-service/src/main/java/**,flight-service/src/main/java/**</sonar.inclusions>
-        <sonar.coverage.exclusions>
-            config-server/**,
-            email-service/**,
-            service-registry/**,
-            api-gateway/**
-        </sonar.coverage.exclusions>
+        <sonar.inclusions>**/booking-service/src/main/java/**,**/flight-service/src/main/java/**</sonar.inclusions>
+        <sonar.coverage.exclusions>**/config-server/**,**/email-service/**,**/service-registry/**,**/api-gateway/**</sonar.coverage.exclusions>
+        <java.version>21</java.version>
     </properties>
 
     <build>
         <pluginManagement>
             <plugins>
+                <!-- Sonar Maven Plugin -->
+                <plugin>
+                    <groupId>org.sonarsource.scanner.maven</groupId>
+                    <artifactId>sonar-maven-plugin</artifactId>
+                    <version>3.9.1.2184</version>
+                </plugin>
 
-
-
-
-                    <plugin>
-                        <groupId>org.sonarsource.scanner.maven</groupId>
-                        <artifactId>sonar-maven-plugin</artifactId>
-                        <version>3.9.1.2184</version>
-                    </plugin>
-
+                <!-- Jacoco for coverage -->
                 <plugin>
                     <groupId>org.jacoco</groupId>
                     <artifactId>jacoco-maven-plugin</artifactId>
                     <version>0.8.12</version>
                     <executions>
+                        <!-- Attach JaCoCo agent for tests -->
                         <execution>
                             <id>prepare-agent</id>
                             <goals>
                                 <goal>prepare-agent</goal>
                             </goals>
                         </execution>
+
+                        <!-- Aggregate report at verify phase -->
                         <execution>
                             <id>report-aggregate</id>
                             <phase>verify</phase>
@@ -65,12 +58,32 @@
                                 <goal>report-aggregate</goal>
                             </goals>
                         </execution>
+
+                        <!-- Enforce minimum coverage rule if needed -->
+                        <execution>
+                            <id>jacoco-check</id>
+                            <goals>
+                                <goal>check</goal>
+                            </goals>
+                            <configuration>
+                                <rules>
+                                    <rule>
+                                        <element>CLASS</element>
+                                        <limits>
+                                            <limit>
+                                                <counter>LINE</counter>
+                                                <value>COVEREDRATIO</value>
+                                                <minimum>0.80</minimum>
+                                            </limit>
+                                        </limits>
+                                    </rule>
+                                </rules>
+                            </configuration>
+                        </execution>
                     </executions>
                 </plugin>
-
             </plugins>
-
-
         </pluginManagement>
     </build>
+
 </project>
