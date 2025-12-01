@@ -31,3 +31,7 @@ build/
 
 ### VS Code ###
 .vscode/
+
+
+# Ignore environment files
+src/main/resources/mailtrap.properties
